@@ -1,108 +1,172 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Pedido de Trabalho</title>
+  <title>Pedidos Internos</title>
 
   <style>
 
     *{
-      box-sizing:border-box;
       margin:0;
       padding:0;
+      box-sizing:border-box;
     }
 
     body{
-      background:#111827;
+
+      background:#0f172a;
+
       font-family:Arial, Helvetica, sans-serif;
+
       color:white;
-      padding:40px 20px;
+
+      padding:30px;
+
     }
 
     .container{
-      max-width:700px;
+
+      max-width:750px;
+
       margin:auto;
-      background:#1f2937;
-      padding:30px;
-      border-radius:16px;
-      box-shadow:0 0 20px rgba(0,0,0,0.4);
+
+      background:#1e293b;
+
+      padding:35px;
+
+      border-radius:18px;
+
+      box-shadow:0 0 30px rgba(0,0,0,0.4);
+
     }
 
     h1{
-      margin-bottom:10px;
+
       font-size:32px;
+
+      margin-bottom:10px;
+
     }
 
-    p{
-      margin-bottom:25px;
-      color:#9ca3af;
+    .subtitle{
+
+      color:#94a3b8;
+
+      margin-bottom:30px;
+
     }
 
     .grid{
+
       display:grid;
+
       grid-template-columns:1fr 1fr;
+
       gap:15px;
+
     }
 
     .full{
+
       grid-column:1 / -1;
+
     }
 
     input,
     textarea,
     select{
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:10px;
-      background:#374151;
-      color:white;
-      font-size:15px;
-    }
 
-    textarea{
-      min-height:140px;
-      resize:vertical;
+      width:100%;
+
+      padding:14px;
+
+      border:none;
+
+      border-radius:10px;
+
+      background:#334155;
+
+      color:white;
+
+      font-size:15px;
+
     }
 
     input:focus,
     textarea:focus,
     select:focus{
-      outline:2px solid #2563eb;
+
+      outline:2px solid #3b82f6;
+
+    }
+
+    textarea{
+
+      min-height:150px;
+
+      resize:vertical;
+
     }
 
     button{
+
       width:100%;
-      padding:16px;
+
       margin-top:20px;
+
+      padding:16px;
+
       border:none;
+
       border-radius:10px;
+
       background:#2563eb;
+
       color:white;
+
       font-size:16px;
-      cursor:pointer;
-      transition:0.2s;
+
       font-weight:bold;
+
+      cursor:pointer;
+
+      transition:0.2s;
+
     }
 
     button:hover{
+
       background:#1d4ed8;
+
     }
 
     .success{
+
       display:none;
+
       margin-top:20px;
+
       background:#065f46;
+
       padding:15px;
+
       border-radius:10px;
+
+      text-align:center;
+
     }
 
     @media(max-width:700px){
 
       .grid{
+
         grid-template-columns:1fr;
+
       }
 
     }
@@ -110,63 +174,97 @@
   </style>
 
 </head>
+
 <body>
 
   <div class="container">
 
-    <h1>Pedido de Trabalho</h1>
+    <h1>Pedidos Internos</h1>
 
-    <p>
-      Preenche o formulário abaixo.
+    <p class="subtitle">
+      Preenche os dados abaixo.
     </p>
 
     <form id="formulario">
 
+      <!-- WEB3FORMS -->
+
       <input 
         type="hidden" 
         name="access_key" 
-        value="SUA_API_KEY"
+        value="9f471d61-2558-4df2-a220-0028f59bd975"
+      >
+
+      <input 
+        type="hidden" 
+        name="subject" 
+        value="Novo Pedido Interno"
+      >
+
+      <input 
+        type="hidden" 
+        name="from_name" 
+        value="Sistema Interno"
+      >
+
+      <input 
+        type="checkbox" 
+        name="botcheck" 
+        style="display:none;"
       >
 
       <div class="grid">
 
         <div>
-          <input 
-            type="text" 
-            name="nome" 
+
+          <input
+            type="text"
+            name="nome"
             placeholder="Nome"
             required
           >
+
         </div>
 
         <div>
-          <input 
-            type="date" 
+
+          <input
+            type="date"
             name="data"
             required
           >
+
         </div>
 
         <div class="full">
-          <input 
-            type="text" 
-            name="obra" 
+
+          <input
+            type="text"
+            name="obra"
             placeholder="Nome da obra"
             required
           >
+
         </div>
 
         <div>
-          <input 
-            type="text" 
-            name="pedido_por" 
+
+          <input
+            type="text"
+            name="pedido_por"
             placeholder="Pedido por"
             required
           >
+
         </div>
 
         <div>
-          <select name="prioridade" required>
+
+          <select
+            name="prioridade"
+            required
+          >
+
             <option value="">
               Prioridade
             </option>
@@ -182,27 +280,35 @@
             <option value="Urgente">
               Urgente
             </option>
+
           </select>
+
         </div>
 
         <div class="full">
-          <textarea 
-            name="mensagem" 
-            placeholder="Descreve o pedido..."
+
+          <textarea
+            name="descricao"
+            placeholder="Descrição do pedido..."
             required
           ></textarea>
+
         </div>
 
       </div>
 
       <button type="submit">
+
         Enviar Pedido
+
       </button>
 
     </form>
 
     <div class="success" id="successMessage">
+
       Pedido enviado com sucesso.
+
     </div>
 
   </div>
@@ -210,6 +316,7 @@
   <script>
 
     const form = document.getElementById("formulario");
+
     const success = document.getElementById("successMessage");
 
     form.addEventListener("submit", async function(e){
@@ -234,7 +341,8 @@
 
         form.reset();
 
-      }else{
+      }
+      else{
 
         alert("Erro ao enviar.");
 
@@ -245,4 +353,5 @@
   </script>
 
 </body>
+
 </html>
