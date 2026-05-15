@@ -131,12 +131,15 @@
       <input type="hidden" name="subject" value="Novo Pedido">
       <input type="hidden" name="from_name" value="Sistema de Pedidos">
       <input type="checkbox" name="botcheck" style="display:none;">
+      
+      <!-- CAMPO OCULTO MÁGICO PARA O EXCEL -->
+      <input type="hidden" name="_Excel_Linha" id="excelLinha">
 
       <div class="grid">
         <!-- Nome -->
         <div>
           <label>Nome *</label>
-          <input type="text" name="nome" required>
+          <input type="text" name="nome" id="nome" required>
         </div>
 
         <!-- Data Hora -->
@@ -148,13 +151,13 @@
         <!-- Requerente -->
         <div>
           <label>Requerente *</label>
-          <input type="text" name="requerente" required>
+          <input type="text" name="requerente" id="requerente" required>
         </div>
 
         <!-- Empresa -->
         <div>
           <label>Empresa *</label>
-          <input type="text" name="empresa" required>
+          <input type="text" name="empresa" id="empresa" required>
         </div>
 
         <!-- Via -->
@@ -171,37 +174,37 @@
         <!-- Outros -->
         <div id="outrosDiv" style="display:none;">
           <label>Especificar</label>
-          <input type="text" name="via_outros" placeholder="Especificar">
+          <input type="text" name="via_outros" id="viaOutros" placeholder="Especificar">
         </div>
 
         <!-- Serviço -->
         <div class="full">
           <label>Serviço solicitado *</label>
-          <textarea name="servico" required></textarea>
+          <textarea name="servico" id="servico" required></textarea>
         </div>
 
         <!-- Local -->
         <div>
           <label>Local / Obra *</label>
-          <input type="text" name="local_obra" required>
+          <input type="text" name="local_obra" id="localObra" required>
         </div>
 
         <!-- Concelho -->
         <div>
           <label>Concelho</label>
-          <input type="text" name="concelho">
+          <input type="text" name="concelho" id="concelho">
         </div>
 
         <!-- Limite -->
         <div>
           <label>Data + Hora Limite *</label>
-          <input type="datetime-local" name="data_hora_limite" required>
+          <input type="datetime-local" name="data_hora_limite" id="dataHoraLimite" required>
         </div>
 
         <!-- OBS -->
         <div class="full">
           <label>OBS</label>
-          <textarea name="obs"></textarea>
+          <textarea name="obs" id="obs"></textarea>
         </div>
       </div>
 
@@ -244,6 +247,24 @@
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
+      // --- CONFIGURAÇÃO DA LINHA DO EXCEL ---
+      // Recolhe os valores atuais, limpando quebras de linha nos campos de texto longo (serviço e obs)
+      const nome = document.getElementById("nome").value;
+      const dataHora = document.getElementById("dataHora").value;
+      const requerente = document.getElementById("requerente").value;
+      const empresa = document.getElementById("empresa").value;
+      const via = viaSelect.value === "Outros" ? document.getElementById("viaOutros").value : viaSelect.value;
+      const servico = document.getElementById("servico").value.replace(/\r?\n|\r/g, " "); // remove quebras de linha
+      const localObra = document.getElementById("localObra").value;
+      const concelho = document.getElementById("concelho").value || "-";
+      const dataHoraLimite = document.getElementById("dataHoraLimite").value;
+      const obs = (document.getElementById("obs").value || "-").replace(/\r?\n|\r/g, " ");
+
+      // Junta tudo separado por um caractere de TABULAÇÃO (\t)
+      // O Excel interpreta o \t nativamente como "mudar de coluna" ao colar
+      document.getElementById("excelLinha").value = `${nome}\t${dataHora}\t${requerente}\t${empresa}\t${via}\t${servico}\t${localObra}\t${concelho}\t${dataHoraLimite}\t${obs}`;
+      // --------------------------------------
+
       // Bloquear o botão para evitar múltiplos cliques
       btnEnviar.disabled = true;
       btnEnviar.innerText = "A enviar...";
@@ -262,11 +283,9 @@
           success.style.display = "block";
           form.reset();
           
-          // Correções pós-reset:
-          atualizarDataAtual(); // Recoloca a data de hoje
-          outrosDiv.style.display = "none"; // Garante que a div "Outros" esconde
+          atualizarDataAtual(); 
+          outrosDiv.style.display = "none"; 
           
-          // Desaparecer com a mensagem de sucesso após 5 segundos (opcional, melhora a UX)
           setTimeout(() => {
             success.style.display = "none";
           }, 5000);
@@ -278,7 +297,6 @@
         console.error(error);
         alert("Erro de ligação ao servidor.");
       } finally {
-        // Reativar o botão após a resposta (com sucesso ou erro)
         btnEnviar.disabled = false;
         btnEnviar.innerText = "Enviar Pedido";
       }
