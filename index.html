@@ -29,7 +29,6 @@
 
   <div class="container">
     <h1>Registo de Pedidos</h1>
-    <p class="subtitle">A linha para o Excel aparecerá no topo do email recebido.</p>
 
     <form id="formulario" action="https://api.web3forms.com/submit" method="POST">
       <input type="hidden" name="access_key" value="9f471d61-2558-4df2-a220-0028f59bd975">
@@ -37,7 +36,7 @@
       <input type="hidden" name="from_name" value="Sistema de Pedidos">
       <input type="checkbox" name="botcheck" style="display:none;">
       
-      <input type="hidden" name="00_LINHA_EXCEL" id="excelLinha">
+      <input type="hidden" name="LINHA_EXCEL" id="excelLinha">
 
       <input type="hidden" name="Data_do_Pedido" id="hiddenData">
       <input type="hidden" name="Hora_do_Pedido" id="hiddenHora">
@@ -104,7 +103,7 @@
     </form>
 
     <div class="success" id="successMessage">
-      ✅ Enviado! A linha Excel está no topo do seu email.
+      ✅ Enviado!
     </div>
   </div>
 
