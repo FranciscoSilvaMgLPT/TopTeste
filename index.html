@@ -126,41 +126,12 @@
 
     <form id="formulario" action="https://api.web3forms.com/submit" method="POST">
       <!-- WEB3FORMS -->
-      <input type="hidden" name="access_key" value="COLOCA_AQUI_A_TUA_API_KEY">
+      <input type="hidden" name="access_key" value="9f471d61-2558-4df2-a220-0028f59bd975">
       <input type="hidden" name="subject" value="Novo Pedido">
       <input type="hidden" name="from_name" value="Sistema de Pedidos">
-      <input type="hidden" name="email_template" value="custom-simple">
+      <input type="hidden" name="email_template" value="custom">
       <input type="checkbox" name="botcheck" style="display:none;">
 
-      <!-- TEMPLATE EMAIL -->
-      <textarea name="message" style="display:none;">
-Novo pedido recebido através do sistema interno.
-
-==================================
-Nome: {{nome}}
-Data + Hora: {{data_hora}}
-Requerente: {{requerente}}
-Empresa: {{empresa}}
-Via: {{via}}
-Outros: {{via_outros}}
-
-Serviço solicitado:
-{{servico}}
-
-Local / Obra:
-{{local_obra}}
-
-Concelho:
-{{concelho}}
-
-Data + Hora Limite:
-{{data_hora_limite}}
-
-OBS:
-{{obs}}
-==================================
-
-Sistema automático.
       </textarea>
 
       <div class="grid">
