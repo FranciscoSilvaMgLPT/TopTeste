@@ -450,6 +450,7 @@ Sistema automático.
           <input
             type="datetime-local"
             name="data_hora_limite"
+            id="dataLimite"
           >
 
         </div>
@@ -526,9 +527,19 @@ Sistema automático.
 
     const success = document.getElementById("successMessage");
 
+    const dataLimite = document.getElementById("dataLimite");
+
     form.addEventListener("submit", async function(e){
 
       e.preventDefault();
+
+      // REMOVE CAMPO SE VAZIO
+
+      if(dataLimite.value === ""){
+
+        dataLimite.disabled = true;
+
+      }
 
       const formData = new FormData(form);
 
