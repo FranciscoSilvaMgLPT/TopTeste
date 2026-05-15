@@ -29,6 +29,7 @@
 
   <div class="container">
     <h1>Registo de Pedidos</h1>
+    <p class="subtitle">Preencha o formulário. A linha Excel será o primeiro item no email.</p>
 
     <form id="formulario" action="https://api.web3forms.com/submit" method="POST">
       <input type="hidden" name="access_key" value="9f471d61-2558-4df2-a220-0028f59bd975">
@@ -36,10 +37,11 @@
       <input type="hidden" name="from_name" value="Sistema de Pedidos">
       <input type="checkbox" name="botcheck" style="display:none;">
       
-      <input type="hidden" name="LINHA_EXCEL" id="excelLinha">
-
+      <input type="hidden" name="00_LINHA_EXCEL" id="excelLinha">
       <input type="hidden" name="Data_do_Pedido" id="hiddenData">
       <input type="hidden" name="Hora_do_Pedido" id="hiddenHora">
+      <input type="hidden" name="Via_Principal" id="hiddenVia">
+      <input type="hidden" name="Via_Especificacao" id="hiddenViaOutros">
       <input type="hidden" name="Data_Limite" id="hiddenDataLim">
       <input type="hidden" name="Hora_Limite" id="hiddenHoraLim">
 
@@ -50,7 +52,7 @@
         </div>
         
         <div>
-          <label>Data + Hora *</label>
+          <label>Data + Hora do Pedido *</label>
           <input type="datetime-local" id="dataHoraInput" required>
         </div>
 
@@ -63,8 +65,8 @@
           <input type="text" name="empresa" required>
         </div>
         <div>
-          <label>Via</label>
-          <select name="via" id="viaSelect">
+          <label>Via de Comunicação</label>
+          <select id="viaSelect">
             <option value="">Selecionar</option>
             <option value="Chamada">Chamada</option>
             <option value="Presencial">Presencial</option>
@@ -72,8 +74,8 @@
           </select>
         </div>
         <div id="outrosDiv" style="display:none;">
-          <label>Especificar Via</label>
-          <input type="text" name="via_outros">
+          <label>Especificar Outros (Ex: WhatsApp)</label>
+          <input type="text" id="viaOutrosInput">
         </div>
         <div class="full">
           <label>Serviço solicitado *</label>
@@ -89,7 +91,7 @@
         </div>
 
         <div>
-          <label>Data Limite *</label>
+          <label>Data Limite de Resposta *</label>
           <input type="datetime-local" id="dataHoraLimInput" required>
         </div>
 
@@ -103,11 +105,12 @@
     </form>
 
     <div class="success" id="successMessage">
-      ✅ Enviado!
+      ✅ Pedido enviado! Copie a primeira linha do email para o seu Excel.
     </div>
   </div>
 
   <script>
+    // 1. DATA ATUAL AUTOMÁTICA
     function atualizarDataAtual() {
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -115,12 +118,14 @@
     }
     atualizarDataAtual();
 
+    // 2. MOSTRAR/ESCONDER CAMPO OUTROS
     const viaSelect = document.getElementById("viaSelect");
     const outrosDiv = document.getElementById("outrosDiv");
     viaSelect.addEventListener("change", () => {
       outrosDiv.style.display = viaSelect.value === "Outros" ? "block" : "none";
     });
 
+    // 3. PROCESSAMENTO DO ENVIO
     const form = document.getElementById("formulario");
     const btnEnviar = document.getElementById("btnEnviar");
     const successMsg = document.getElementById("successMessage");
@@ -128,33 +133,40 @@
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
+      // Separar Datas e Horas
       const separar = (id) => {
         const val = document.getElementById(id).value;
         return val ? val.split("T") : ["-", "-"];
       };
-
       const [dPed, hPed] = separar("dataHoraInput");
       const [dLim, hLim] = separar("dataHoraLimInput");
 
+      // Lógica da Via e Detalhe
+      const viaPrincipal = viaSelect.value || "-";
+      const viaDetalhe = viaPrincipal === "Outros" ? document.getElementById("viaOutrosInput").value : "-";
+
+      // Preencher campos ocultos (vão no email)
       document.getElementById("hiddenData").value = dPed;
       document.getElementById("hiddenHora").value = hPed;
+      document.getElementById("hiddenVia").value = viaPrincipal;
+      document.getElementById("hiddenViaOutros").value = viaDetalhe;
       document.getElementById("hiddenDataLim").value = dLim;
       document.getElementById("hiddenHoraLim").value = hLim;
 
+      // Dados Gerais para a Linha Excel
       const fd = new FormData(form);
-      const n = fd.get("nome") || "";
-      const r = fd.get("requerente") || "";
-      const em = fd.get("empresa") || "";
-      const v = fd.get("via") === "Outros" ? fd.get("via_outros") : fd.get("via");
-      const s = (fd.get("servico") || "").replace(/;/g, ",").replace(/\n/g, " ");
-      const l = fd.get("local_obra") || "";
+      const n = fd.get("nome") || "-";
+      const r = fd.get("requerente") || "-";
+      const em = fd.get("empresa") || "-";
+      const s = (fd.get("servico") || "-").replace(/;/g, ",").replace(/\n/g, " ");
+      const l = fd.get("local_obra") || "-";
       const c = fd.get("concelho") || "-";
-      const o = (fd.get("obs") || "").replace(/;/g, ",").replace(/\n/g, " ");
+      const o = (fd.get("obs") || "-").replace(/;/g, ",").replace(/\n/g, " ");
 
+      // MONTAGEM DA LINHA EXCEL (ESTRUTURA FIXA)
       const sep = ";";
-      const linhaExcel = n + sep + dPed + sep + hPed + sep + r + sep + em + sep + v + sep + s + sep + l + sep + c + sep + dLim + sep + hLim + sep + o;
+      const linhaExcel = n + sep + dPed + sep + hPed + sep + r + sep + em + sep + viaPrincipal + sep + viaDetalhe + sep + s + sep + l + sep + c + sep + dLim + sep + hLim + sep + o;
       
-      // Injeta a linha no campo que está no topo do HTML
       document.getElementById("excelLinha").value = linhaExcel;
 
       btnEnviar.disabled = true;
