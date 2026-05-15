@@ -224,10 +224,58 @@
       >
 
       <input 
+        type="hidden"
+        name="email_template"
+        value="custom"
+      >
+
+      <input 
         type="checkbox" 
         name="botcheck" 
         style="display:none;"
       >
+
+      <!-- TEMPLATE EMAIL -->
+
+      <textarea 
+        name="message" 
+        style="display:none;"
+      >
+Novo pedido recebido através do sistema interno.
+
+==================================
+
+Nome: {{nome}}
+
+Data + Hora: {{data_hora}}
+
+Requerente: {{requerente}}
+
+Empresa: {{empresa}}
+
+Via: {{via}}
+
+Outros: {{via_outros}}
+
+Serviço solicitado:
+{{servico}}
+
+Local / Obra:
+{{local_obra}}
+
+Concelho:
+{{concelho}}
+
+Data + Hora Limite:
+{{data_hora_limite}}
+
+OBS:
+{{obs}}
+
+==================================
+
+Sistema automático.
+      </textarea>
 
       <div class="grid">
 
