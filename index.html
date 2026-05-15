@@ -74,7 +74,7 @@
     }
 
     textarea {
-      min-height: 140px;
+      min-height: 120px;
       resize: vertical;
     }
 
@@ -123,46 +123,39 @@
 
   <div class="container">
     <h1>Registo de Pedidos</h1>
-    <p class="subtitle">Preenche os dados abaixo.</p>
+    <p class="subtitle">Preenche os dados abaixo para registo interno.</p>
 
     <form id="formulario" action="https://api.web3forms.com/submit" method="POST">
-      <!-- WEB3FORMS -->
       <input type="hidden" name="access_key" value="9f471d61-2558-4df2-a220-0028f59bd975">
-      <input type="hidden" name="subject" value="Novo Pedido">
+      <input type="hidden" name="subject" value="Novo Pedido de Serviço">
       <input type="hidden" name="from_name" value="Sistema de Pedidos">
       <input type="checkbox" name="botcheck" style="display:none;">
       
-      <!-- CAMPO OCULTO MÁGICO PARA O EXCEL -->
-      <input type="hidden" name="_Excel_Linha" id="excelLinha">
+      <input type="hidden" name="DadosParaExcel" id="excelLinha">
 
       <div class="grid">
-        <!-- Nome -->
         <div>
-          <label>Nome *</label>
-          <input type="text" name="nome" id="nome" required>
+          <label>Nome do Técnico/Responsável *</label>
+          <input type="text" name="nome" required>
         </div>
 
-        <!-- Data Hora -->
         <div>
-          <label>Data + Hora *</label>
+          <label>Data + Hora do Pedido *</label>
           <input type="datetime-local" name="data_hora" id="dataHora" required>
         </div>
 
-        <!-- Requerente -->
         <div>
-          <label>Requerente *</label>
-          <input type="text" name="requerente" id="requerente" required>
+          <label>Requerente (Cliente/Pessoa) *</label>
+          <input type="text" name="requerente" required>
         </div>
 
-        <!-- Empresa -->
         <div>
           <label>Empresa *</label>
-          <input type="text" name="empresa" id="empresa" required>
+          <input type="text" name="empresa" required>
         </div>
 
-        <!-- Via -->
         <div>
-          <label>Via</label>
+          <label>Via de Comunicação</label>
           <select name="via" id="viaSelect">
             <option value="">Selecionar</option>
             <option value="Chamada">Chamada</option>
@@ -171,40 +164,34 @@
           </select>
         </div>
 
-        <!-- Outros -->
         <div id="outrosDiv" style="display:none;">
-          <label>Especificar</label>
-          <input type="text" name="via_outros" id="viaOutros" placeholder="Especificar">
+          <label>Especificar Via</label>
+          <input type="text" name="via_outros" id="viaOutrosInput" placeholder="Ex: WhatsApp, Email...">
         </div>
 
-        <!-- Serviço -->
         <div class="full">
           <label>Serviço solicitado *</label>
-          <textarea name="servico" id="servico" required></textarea>
+          <textarea name="servico" required></textarea>
         </div>
 
-        <!-- Local -->
         <div>
           <label>Local / Obra *</label>
-          <input type="text" name="local_obra" id="localObra" required>
+          <input type="text" name="local_obra" required>
         </div>
 
-        <!-- Concelho -->
         <div>
           <label>Concelho</label>
-          <input type="text" name="concelho" id="concelho">
+          <input type="text" name="concelho">
         </div>
 
-        <!-- Limite -->
         <div>
           <label>Data + Hora Limite *</label>
-          <input type="datetime-local" name="data_hora_limite" id="dataHoraLimite" required>
+          <input type="datetime-local" name="data_hora_limite" required>
         </div>
 
-        <!-- OBS -->
         <div class="full">
-          <label>OBS</label>
-          <textarea name="obs" id="obs"></textarea>
+          <label>Observações (OBS)</label>
+          <textarea name="obs"></textarea>
         </div>
       </div>
 
@@ -212,90 +199,81 @@
     </form>
 
     <div class="success" id="successMessage">
-      Pedido enviado com sucesso.
+      ✅ Pedido enviado com sucesso e pronto para registo!
     </div>
   </div>
 
   <script>
-    // FUNÇÃO PARA ATUALIZAR A DATA ATUAL
+    // 1. DATA ATUAL AUTOMÁTICA
     function atualizarDataAtual() {
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       document.getElementById("dataHora").value = now.toISOString().slice(0, 16);
     }
-
-    // Executa ao carregar a página
     atualizarDataAtual();
 
-    // VIA OUTROS
+    // 2. LÓGICA DO CAMPO "OUTROS"
     const viaSelect = document.getElementById("viaSelect");
     const outrosDiv = document.getElementById("outrosDiv");
-
-    viaSelect.addEventListener("change", function () {
-      if (viaSelect.value === "Outros") {
-        outrosDiv.style.display = "block";
-      } else {
-        outrosDiv.style.display = "none";
-      }
+    viaSelect.addEventListener("change", () => {
+      outrosDiv.style.display = viaSelect.value === "Outros" ? "block" : "none";
     });
 
-    // FORM
+    // 3. ENVIO E GERADOR DE LINHA EXCEL
     const form = document.getElementById("formulario");
-    const success = document.getElementById("successMessage");
     const btnEnviar = document.getElementById("btnEnviar");
+    const successMsg = document.getElementById("successMessage");
 
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      // --- CONFIGURAÇÃO DA LINHA DO EXCEL ---
-      // Recolhe os valores atuais, limpando quebras de linha nos campos de texto longo (serviço e obs)
-      const nome = document.getElementById("nome").value;
-      const dataHora = document.getElementById("dataHora").value;
-      const requerente = document.getElementById("requerente").value;
-      const empresa = document.getElementById("empresa").value;
-      const via = viaSelect.value === "Outros" ? document.getElementById("viaOutros").value : viaSelect.value;
-      const servico = document.getElementById("servico").value.replace(/\r?\n|\r/g, " "); // remove quebras de linha
-      const localObra = document.getElementById("localObra").value;
-      const concelho = document.getElementById("concelho").value || "-";
-      const dataHoraLimite = document.getElementById("dataHoraLimite").value;
-      const obs = (document.getElementById("obs").value || "-").replace(/\r?\n|\r/g, " ");
+      // PREPARAR LINHA DO EXCEL (TAB SEPARATED)
+      // Usamos FormData para pegar os valores atuais de forma limpa
+      const fd = new FormData(form);
+      
+      const nome = fd.get("nome");
+      const dataH = fd.get("data_hora");
+      const req = fd.get("requerente");
+      const emp = fd.get("empresa");
+      const via = fd.get("via") === "Outros" ? fd.get("via_outros") : fd.get("via");
+      const serv = fd.get("servico").replace(/\n/g, " "); // Remove quebras de linha
+      const loc = fd.get("local_obra");
+      const conc = fd.get("concelho") || "-";
+      const lim = fd.get("data_hora_limite");
+      const obs = (fd.get("obs") || "-").replace(/\n/g, " ");
 
-      // Junta tudo separado por um caractere de TABULAÇÃO (\t)
-      // O Excel interpreta o \t nativamente como "mudar de coluna" ao colar
-      document.getElementById("excelLinha").value = `${nome}\t${dataHora}\t${requerente}\t${empresa}\t${via}\t${servico}\t${localObra}\t${concelho}\t${dataHoraLimite}\t${obs}`;
-      // --------------------------------------
+      // Monta a string separada por Tabs (\t)
+      const linhaExcel = `${nome}\t${dataH}\t${req}\t${emp}\t${via}\t${serv}\t${loc}\t${conc}\t${lim}\t${obs}`;
+      
+      // Injeta no campo oculto antes de enviar
+      document.getElementById("excelLinha").value = linhaExcel;
 
-      // Bloquear o botão para evitar múltiplos cliques
+      // FEEDBACK UI
       btnEnviar.disabled = true;
-      btnEnviar.innerText = "A enviar...";
+      btnEnviar.innerText = "A processar...";
 
-      const formData = new FormData(form);
-
+      // ENVIO REAL
       try {
         const response = await fetch("https://api.web3forms.com/submit", {
           method: "POST",
-          body: formData
+          body: new FormData(form) // Enviamos o FormData atualizado com a linha do excel
         });
 
-        const data = await response.json();
+        const result = await response.json();
 
-        if (data.success) {
-          success.style.display = "block";
+        if (result.success) {
+          successMsg.style.display = "block";
           form.reset();
+          atualizarDataAtual();
+          outrosDiv.style.display = "none";
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           
-          atualizarDataAtual(); 
-          outrosDiv.style.display = "none"; 
-          
-          setTimeout(() => {
-            success.style.display = "none";
-          }, 5000);
-
+          setTimeout(() => { successMsg.style.display = "none"; }, 6000);
         } else {
-          alert("Erro da API: " + data.message);
+          alert("Erro: " + result.message);
         }
-      } catch (error) {
-        console.error(error);
-        alert("Erro de ligação ao servidor.");
+      } catch (err) {
+        alert("Erro de rede. Verifica a tua ligação.");
       } finally {
         btnEnviar.disabled = false;
         btnEnviar.innerText = "Enviar Pedido";
