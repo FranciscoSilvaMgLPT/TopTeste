@@ -28,7 +28,7 @@
 <body>
 
   <div class="container">
-    <h1>Registo de Pedidos</h1>
+    <h1>Registo de Pedidos</h1>
 
     <form id="formulario" action="https://api.web3forms.com/submit" method="POST">
       <input type="hidden" name="access_key" value="9f471d61-2558-4df2-a220-0028f59bd975">
@@ -64,11 +64,12 @@
         <input type="hidden" name="07_Via_Especificacao" id="hiddenViaOutros">
 
         <div>
-          <label>Via de Comunicação</label>
-          <select id="viaSelect">
+          <label>Via de Comunicação *</label>
+          <select id="viaSelect" required>
             <option value="">Selecionar</option>
             <option value="Chamada">Chamada</option>
             <option value="Presencial">Presencial</option>
+            <option value="Email">Email</option>
             <option value="Outros">Outros</option>
           </select>
         </div>
