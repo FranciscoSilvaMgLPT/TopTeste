@@ -94,8 +94,8 @@
         </div>
 
         <div class="full">
-          <label>Observações</label>
-          <textarea name="11_Obs"></textarea>
+          <label>Observação</label>
+          <textarea name="11_Observação"></textarea>
         </div>
 
         <div>
@@ -161,7 +161,7 @@
       const l = fd.get("08_Local_Obra") || "-";
       const c = fd.get("09_Concelho") || "-";
       const s = (fd.get("10_Servico") || "-").replace(/;/g, ",").replace(/\n/g, " ");
-      const o = (fd.get("11_Obs") || "-").replace(/;/g, ",").replace(/\n/g, " ");
+      const o = (fd.get("11_Observação") || "-").replace(/;/g, ",").replace(/\n/g, " ");
 
       // Montagem da LINHA EXCEL (Ordem solicitada para colunas)
       const sep = ";";
