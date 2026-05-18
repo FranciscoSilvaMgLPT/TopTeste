@@ -69,9 +69,7 @@
     input:focus,
     textarea:focus,
     select:focus{
-
       outline:2px solid #3b82f6;
-
     }
 
     textarea{
@@ -142,7 +140,7 @@
 
       <!-- WEB3FORMS -->
 
-      <input type="hidden" name="access_key" value="9f471d61-2558-4df2-a220-0028f59bd975">
+      <input type="hidden" name="access_key" value="COLOCA_AQUI_A_TUA_API_KEY">
 
       <input type="hidden" name="subject" value="Novo Pedido - Sistema Interno">
 
@@ -151,28 +149,34 @@
       <input type="checkbox" name="botcheck" style="display:none;">
 
 
-      <!-- CAMPOS OCULTOS -->
+      <!-- HIDDEN -->
+
       <input type="hidden" name="00_LINHA_EXCEL" id="excelLinha">
 
-      <input type="hidden" name="01_Data_Pedido" id="hiddenDataPedido">
+      <input type="hidden" name="02_Data_Pedido" id="hiddenDataPedido">
 
-      <input type="hidden" name="02_Hora_Pedido" id="hiddenHoraPedido">
+      <input type="hidden" name="03_Hora_Pedido" id="hiddenHoraPedido">
 
-      <input type="hidden" name="05_Via" id="hiddenVia">
+      <input type="hidden" name="06_Via" id="hiddenVia">
 
-      <input type="hidden" name="06_Via_Outros" id="hiddenViaOutros">
+      <input type="hidden" name="07_Via_Outros" id="hiddenViaOutros">
 
-      <input type="hidden" name="12_Data_Limite" id="hiddenDataLimite">
+      <input type="hidden" name="13_Data_Limite" id="hiddenDataLimite">
 
-      <input type="hidden" name="13_Hora_Limite" id="hiddenHoraLimite">
+      <input type="hidden" name="14_Hora_Limite" id="hiddenHoraLimite">
 
-      <input type="hidden" name="14_Data_Fecho" id="hiddenDataFecho">
+      <input type="hidden" name="15_Data_Fecho" id="hiddenDataFecho">
 
-      <input type="hidden" name="15_Hora_Fecho" id="hiddenHoraFecho">
+      <input type="hidden" name="16_Hora_Fecho" id="hiddenHoraFecho">
 
       <!-- FORM -->
 
       <div class="grid">
+
+        <div>
+          <label>Nome do Técnico *</label>
+          <input type="text" name="01_Nome_Tecnico" required>
+        </div>
 
         <div>
           <label>Data + Hora Pedido *</label>
@@ -181,12 +185,12 @@
 
         <div>
           <label>Requerente *</label>
-          <input type="text" name="03_Requerente" required>
+          <input type="text" name="04_Requerente" required>
         </div>
 
         <div>
           <label>Empresa *</label>
-          <input type="text" name="04_Empresa" required>
+          <input type="text" name="05_Empresa" required>
         </div>
 
         <div>
@@ -222,7 +226,7 @@
 
           <label>Serviço solicitado *</label>
 
-          <textarea name="07_Servico" required></textarea>
+          <textarea name="08_Servico" required></textarea>
 
         </div>
 
@@ -230,7 +234,7 @@
 
           <label>Frequência</label>
 
-          <input type="text" name="08_Frequencia">
+          <input type="text" name="09_Frequencia">
 
         </div>
 
@@ -238,7 +242,7 @@
 
           <label>Tipo de Trabalho *</label>
 
-          <input type="text" name="09_Tipo_Trabalho" required>
+          <input type="text" name="10_Tipo_Trabalho" required>
 
         </div>
 
@@ -246,7 +250,7 @@
 
           <label>Concelho</label>
 
-          <input type="text" name="10_Concelho">
+          <input type="text" name="11_Concelho">
 
         </div>
 
@@ -254,7 +258,7 @@
 
           <label>Local / Obra *</label>
 
-          <input type="text" name="11_Local_Obra" required>
+          <input type="text" name="12_Local_Obra" required>
 
         </div>
 
@@ -278,7 +282,11 @@
 
           <label>Tempo Dedicado</label>
 
-          <input type="text" name="16_Tempo_Dedicado" placeholder="Ex: 2h30">
+          <input 
+            type="text" 
+            name="17_Tempo_Dedicado" 
+            placeholder="Ex: 2h30"
+          >
 
         </div>
 
@@ -286,7 +294,7 @@
 
           <label>Observações</label>
 
-          <textarea name="17_Obs"></textarea>
+          <textarea name="18_Observações"></textarea>
 
         </div>
 
@@ -366,13 +374,16 @@
 
       e.preventDefault();
 
-      const [dPed, hPed] = separarDataHora("dataPedidoInput");
+      const [dPed, hPed] =
+        separarDataHora("dataPedidoInput");
 
-      const [dLim, hLim] = separarDataHora("dataLimiteInput");
+      const [dLim, hLim] =
+        separarDataHora("dataLimiteInput");
 
-      const [dFec, hFec] = separarDataHora("dataFechoInput");
+      const [dFec, hFec] =
+        separarDataHora("dataFechoInput");
 
-      // CAMPOS OCULTOS
+      // HIDDEN
 
       document.getElementById("hiddenDataPedido").value = dPed;
 
@@ -405,23 +416,41 @@
 
       const excel = [
 
+        fd.get("01_Nome_Tecnico") || "-",
+
         dPed,
+
         hPed,
-        fd.get("03_Requerente") || "-",
-        fd.get("04_Empresa") || "-",
+
+        fd.get("04_Requerente") || "-",
+
+        fd.get("05_Empresa") || "-",
+
         via,
+
         viaOutros,
-        (fd.get("07_Servico") || "-").replace(/\n/g," "),
-        fd.get("08_Frequencia") || "-",
-        fd.get("09_Tipo_Trabalho") || "-",
-        fd.get("10_Concelho") || "-",
-        fd.get("11_Local_Obra") || "-",
+
+        (fd.get("08_Servico") || "-").replace(/\n/g," "),
+
+        fd.get("09_Frequencia") || "-",
+
+        fd.get("10_Tipo_Trabalho") || "-",
+
+        fd.get("11_Concelho") || "-",
+
+        fd.get("12_Local_Obra") || "-",
+
         dLim,
+
         hLim,
+
         dFec,
+
         hFec,
-        fd.get("16_Tempo_Dedicado") || "-",
-        (fd.get("17_Obs") || "-").replace(/\n/g," ")
+
+        fd.get("17_Tempo_Dedicado") || "-",
+
+        (fd.get("18_Observações") || "-").replace(/\n/g," ")
 
       ].join(";");
 
