@@ -43,7 +43,6 @@
       <input type="hidden" name="02_Hora_do_Pedido" id="hiddenHora">
       
       <div class="grid">
-        
         <div>
           <label>Nome do Técnico *</label>
           <input type="text" name="03_Nome" required>
@@ -74,9 +73,9 @@
             <option value="EXTERNO">EXTERNO</option>
           </select>
         </div>
-      </div> <input type="hidden" name="06_Via_Principal" id="hiddenVia">
-      
-      <input type="hidden" name="07_Via_Especificacao" id="hiddenViaOutros">
+      </div>
+
+      <input type="hidden" name="06_Via" id="hiddenVia">
 
       <div class="grid">
         <div>
@@ -98,9 +97,11 @@
 
         <div>
           <label>Local / Obra *</label>
-          <input type="text" name="08_Local_Obra" required>
+          <input type="text" name="07_Local_Obra" required>
         </div>
-      </div> <input type="hidden" name="09_Concelho" id="hiddenConcelho">
+      </div>
+
+      <input type="hidden" name="08_Concelho" id="hiddenConcelho">
 
       <div class="grid">
         <div>
@@ -123,17 +124,17 @@
 
         <div class="full">
           <label>Serviço solicitado *</label>
-          <textarea name="10_Servico" required></textarea>
+          <textarea name="09_Servico" required></textarea>
         </div>
 
         <div class="full">
           <label>Observação</label>
-          <textarea name="11_Observação"></textarea>
+          <textarea name="10_Observação"></textarea>
         </div>
 
         <div>
           <label>Tipo de Trabalho *</label>
-          <select id="tipoTrabalhoSelect" name="12_Tipo_Trabalho" required>
+          <select id="tipoTrabalhoSelect" name="11_Tipo_Trabalho" required>
             <option value="">Selecionar Tipo</option>
             <option value="Lev. Topográfico">Lev. Topográfico</option>
             <option value="Monitorização">Monitorização</option>
@@ -144,7 +145,7 @@
         
         <div>
           <label>Frequência *</label>
-          <select id="frequenciaSelect" name="13_Frequencia" required>
+          <select id="frequenciaSelect" name="12_Frequencia" required>
             <option value="">Selecionar Frequência</option>
             <option value="Diária">Diária</option>
             <option value="Semanal">Semanal</option>
@@ -158,7 +159,7 @@
 
         <div class="full">
           <label>Tempo Dedicado ao Trabalho (S/Deslocação)</label>
-          <input type="text" name="14_Tempo_Dedicado" id="tempoDedicadoInput" placeholder="Ex: 2h, 1 dia inteiro">
+          <input type="text" name="13_Tempo_Dedicado" id="tempoDedicadoInput" placeholder="Ex: 2h, 1 dia inteiro">
         </div>
 
         <div>
@@ -167,9 +168,9 @@
         </div>
       </div>
 
-      <input type="hidden" name="15_Data_Limite" id="hiddenDataLim">
+      <input type="hidden" name="14_Data_Limite" id="hiddenDataLim">
       
-      <input type="hidden" name="16_Hora_Limite" id="hiddenHoraLim">
+      <input type="hidden" name="15_Hora_Limite" id="hiddenHoraLim">
 
       <button type="submit" id="btnEnviar">Enviar Pedido</button>
     </form>
@@ -241,8 +242,8 @@
       const dPed = formatarDataPT(dPedRaw);
       const dLim = formatarDataPT(dLimRaw);
 
-      const viaPrincipal = viaSelect.value || "-";
-      const viaDetalhe = viaPrincipal === "Outro" ? viaOutrosInput.value : "-";
+      // NOVA LÓGICA DE SUBSTITUIÇÃO PARA A VIA (Igual ao Concelho)
+      const viaFinal = viaSelect.value === "Outro" ? (viaOutrosInput.value || "-") : (viaSelect.value || "-");
       const concelhoFinal = concelhoSelect.value === "Outro" ? (concelhoOutroInput.value || "-") : (concelhoSelect.value || "-");
       
       const empresaFinal = document.getElementById("empresaSelect").value || "-";
@@ -250,24 +251,23 @@
       const frequencia = document.getElementById("frequenciaSelect").value || "-";
       const tempoDedicado = document.getElementById("tempoDedicadoInput").value || "-";
 
-      // Atribuição exata para os campos ocultos ordenados por linhas no HTML
+      // Atribuição aos inputs ocultos ordenados
       document.getElementById("hiddenData").value = dPed;
       document.getElementById("hiddenHora").value = hPed;
-      document.getElementById("hiddenVia").value = viaPrincipal;
-      document.getElementById("hiddenViaOutros").value = viaDetalhe;
+      document.getElementById("hiddenVia").value = viaFinal;
       document.getElementById("hiddenConcelho").value = concelhoFinal;
       document.getElementById("hiddenDataLim").value = dLim;
       document.getElementById("hiddenHoraLim").value = hLim;
 
       const n = form.elements["03_Nome"].value || "-";
       const r = form.elements["04_Requerente"].value || "-";
-      const l = form.elements["08_Local_Obra"].value || "-";
-      const s = (form.elements["10_Servico"].value || "-").replace(/;/g, ",").replace(/\n/g, " ");
-      const o = (form.elements["11_Observação"].value || "-").replace(/;/g, ",").replace(/\n/g, " ");
+      const l = form.elements["07_Local_Obra"].value || "-";
+      const s = (form.elements["09_Servico"].value || "-").replace(/;/g, ",").replace(/\n/g, " ");
+      const o = (form.elements["10_Observação"].value || "-").replace(/;/g, ",").replace(/\n/g, " ");
 
-      // Formatação final da string para a base de dados em Excel
+      // String combinada para o Excel — Reduzida para refletir a remoção da coluna VIA(OUTROS)
       const sep = ";";
-      const linhaExcel = n + sep + dPed + sep + hPed + sep + r + sep + empresaFinal + sep + viaPrincipal + sep + viaDetalhe + sep + l + sep + concelhoFinal + sep + s + sep + o + sep + tipoTrabalho + sep + frequencia + sep + tempoDedicado + sep + dLim + sep + hLim;
+      const linhaExcel = n + sep + dPed + sep + hPed + sep + r + sep + empresaFinal + sep + viaFinal + sep + l + sep + concelhoFinal + sep + s + sep + o + sep + tipoTrabalho + sep + frequencia + sep + tempoDedicado + sep + dLim + sep + hLim;
       
       document.getElementById("excelLinha").value = linhaExcel;
 
