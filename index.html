@@ -28,7 +28,7 @@
 <body>
 
   <div class="container">
-    <h1>*Registo de Pedidos*</h1>
+    <h1>Registo de Pedidos</h1>
 
     <form id="formulario" action="https://api.web3forms.com/submit" method="POST">
       <input type="hidden" name="access_key" value="9f471d61-2558-4df2-a220-0028f59bd975">
@@ -37,24 +37,18 @@
       <input type="checkbox" name="botcheck" style="display:none;">
       
       <input type="hidden" name="00_LINHA_EXCEL" id="excelLinha">
+      
       <input type="hidden" name="01_Data_do_Pedido" id="hiddenData">
+      
       <input type="hidden" name="02_Hora_do_Pedido" id="hiddenHora">
       
-      <input type="hidden" name="06_Via_Principal" id="hiddenVia">
-      <input type="hidden" name="07_Via_Especificacao" id="hiddenViaOutros">
-      
-      <input type="hidden" name="09_Concelho" id="hiddenConcelho">
-      
-      <input type="hidden" name="15_Data_Limite" id="hiddenDataLim">
-      <input type="hidden" name="16_Hora_Limite" id="hiddenHoraLim">
-
-
       <div class="grid">
+        
         <div>
           <label>Nome do Técnico *</label>
           <input type="text" name="03_Nome" required>
         </div>
-        
+
         <div>
           <label>Data + Hora do Pedido *</label>
           <input type="datetime-local" id="dataHoraInput" required>
@@ -80,7 +74,11 @@
             <option value="EXTERNO">EXTERNO</option>
           </select>
         </div>
+      </div> <input type="hidden" name="06_Via_Principal" id="hiddenVia">
+      
+      <input type="hidden" name="07_Via_Especificacao" id="hiddenViaOutros">
 
+      <div class="grid">
         <div>
           <label>Via de Comunicação *</label>
           <select id="viaSelect" required>
@@ -102,7 +100,9 @@
           <label>Local / Obra *</label>
           <input type="text" name="08_Local_Obra" required>
         </div>
-        
+      </div> <input type="hidden" name="09_Concelho" id="hiddenConcelho">
+
+      <div class="grid">
         <div>
           <label>Concelho *</label>
           <select id="concelhoSelect" required>
@@ -166,6 +166,10 @@
           <input type="datetime-local" id="dataHoraLimInput" required>
         </div>
       </div>
+
+      <input type="hidden" name="15_Data_Limite" id="hiddenDataLim">
+      
+      <input type="hidden" name="16_Hora_Limite" id="hiddenHoraLim">
 
       <button type="submit" id="btnEnviar">Enviar Pedido</button>
     </form>
@@ -246,7 +250,7 @@
       const frequencia = document.getElementById("frequenciaSelect").value || "-";
       const tempoDedicado = document.getElementById("tempoDedicadoInput").value || "-";
 
-      // Passagem rigorosa de dados para as "caixas ocultas" organizadas no topo
+      // Atribuição exata para os campos ocultos ordenados por linhas no HTML
       document.getElementById("hiddenData").value = dPed;
       document.getElementById("hiddenHora").value = hPed;
       document.getElementById("hiddenVia").value = viaPrincipal;
@@ -261,7 +265,7 @@
       const s = (form.elements["10_Servico"].value || "-").replace(/;/g, ",").replace(/\n/g, " ");
       const o = (form.elements["11_Observação"].value || "-").replace(/;/g, ",").replace(/\n/g, " ");
 
-      // Linha do Excel unificada
+      // Formatação final da string para a base de dados em Excel
       const sep = ";";
       const linhaExcel = n + sep + dPed + sep + hPed + sep + r + sep + empresaFinal + sep + viaPrincipal + sep + viaDetalhe + sep + l + sep + concelhoFinal + sep + s + sep + o + sep + tipoTrabalho + sep + frequencia + sep + tempoDedicado + sep + dLim + sep + hLim;
       
