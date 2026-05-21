@@ -267,7 +267,7 @@
       const s = (form.elements["09_Servico"].value || "-").replace(/;/g, ",").replace(/\n/g, " ");
       const o = (form.elements["10_Observação"].value || "-").replace(/;/g, ",").replace(/\n/g, " ");
 
-      // String combinada para o Excel — Reduzida para refletir a remoção da coluna VIA(OUTROS)
+      // String combinada para o Excel 
       const sep = ";";
       const linhaExcel = n + sep + dPed + sep + hPed + sep + r + sep + empresaFinal + sep + viaFinal + sep + l + sep + concelhoFinal + sep + s + sep + o + sep + tipoTrabalho + sep + frequencia + sep + tempoDedicado + sep + dLim + sep + hLim;
       
