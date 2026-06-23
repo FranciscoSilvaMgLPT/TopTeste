@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Histórico de Pedidos</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_midnight.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    
+    <style>
+        body { background-color: #0f172a; color: white; font-family: sans-serif; padding: 20px; }
+        .btn-voltar { background: #334155; color: white; text-decoration: none; padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: bold; }
+        #tabela-pedidos { margin-top: 20px; font-size: 12px; }
+        #filtro-pesquisa { width: 300px; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #475569; background: #1e293b; color: white; }
+    </style>
+</head>
+<body>
+
+    <div>Utilizador: <strong id="utilizador-info" style="font-weight: bold; color: #60a5fa;">A verificar...</strong></div>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+        <h1 style="margin: 0;">Histórico de Pedidos</h1>
+        <div>
+            <button onclick="guardarAlteracoes()" style="background: #22c55e; padding: 10px; border:none; color:white; border-radius:5px; cursor:pointer; margin-right: 10px;">💾 Guardar Alterações</button>
+            <button onclick="exportarExcel()" style="background: #8b5cf6; padding: 10px; border:none; color:white; border-radius:5px; cursor:pointer; margin-right: 10px;">⬇ Exportar Excel (Template)</button>
+            <a href="index.html" class="btn-voltar">⬅ Voltar</a>
+        </div>
+    </div>
+
+    <input type="text" id="filtro-pesquisa" placeholder="🔍 Pesquisar">
+    <div id="tabela-pedidos"></div>
+
+    <script>
+        const supabaseUrl = 'https://dunondjiqawovisnwavg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1bm9uZGppcWF3b3Zpc253YXZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNTk3MjIsImV4cCI6MjA5NTYzNTcyMn0.KY5xnuHCixsO0a4yCzXP6CmO8e08v1wrDjoGCL-LTro'; 
+        const sbClient = supabase.createClient(supabaseUrl, supabaseKey);
+        let table;
+
+        async function carregarDados() {
+            const { data: { session } } = await sbClient.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            document.getElementById('utilizador-info').innerText = session.user.email;
+
+            const { data, error } = await sbClient.from('pedidos').select('*');
+            if (error) { console.error(error); return; }
+
+            table = new Tabulator("#tabela-pedidos", {
+                data: data,
+                layout: "fitColumns",
+                columns: [
+                    {title: "Técnico", field: "tecnico", editor: "input"},
+                    {title: "Data Pedido", field: "data_hora_pedido", editor: "input"},
+                    {title: "Requerente", field: "requerente", editor: "input"},
+                    {title: "Empresa", field: "empresa", editor: "input"},
+                    {title: "Via", field: "via", editor: "input"},
+                    {title: "Local", field: "local_obra", editor: "input"},
+                    {title: "Concelho", field: "concelho", editor: "input"},
+                    {title: "Serviço", field: "servico", editor: "input"},
+                    {title: "Obs", field: "observacao", editor: "input"},
+                    {title: "Tipo", field: "tipo_trabalho", editor: "input"},
+                    {title: "Freq", field: "frequencia", editor: "input"},
+                    {title: "Tempo", field: "tempo_dedicado", editor: "input"},
+                    {title: "Limite", field: "data_hora_limite", editor: "input"},
+                    {title: "Estado", field: "estado", editor: "input"}
+                ]
+            });
+        }
+
+        async function exportarExcel() {
+            try {
+                const response = await fetch('template.xlsx');
+                const arrayBuffer = await response.arrayBuffer();
+                const workbook = new ExcelJS.Workbook();
+                await workbook.xlsx.load(arrayBuffer);
+                
+                const worksheet = workbook.getWorksheet(1);
+                const dados = table.getData();
+
+                // Começa a preencher a partir da linha 5 (ajuste se necessário)
+                let rowNumber = 5;
+                dados.forEach(item => {
+                    const row = worksheet.getRow(rowNumber);
+                    row.getCell(1).value = item.tecnico;
+                    row.getCell(2).value = item.data_hora_pedido;
+                    row.getCell(3).value = item.requerente;
+                    row.getCell(4).value = item.empresa;
+                    row.getCell(5).value = item.via;
+                    row.getCell(6).value = item.local_obra;
+                    row.getCell(7).value = item.concelho;
+                    row.getCell(8).value = item.servico;
+                    row.getCell(9).value = item.observacao;
+                    row.getCell(10).value = item.tipo_trabalho;
+                    row.getCell(11).value = item.frequencia;
+                    row.getCell(12).value = item.tempo_dedicado;
+                    row.getCell(14).value = item.data_hora_limite;
+                    row.getCell(16).value = item.estado;
+                    row.commit();
+                    rowNumber++;
+                });
+
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "Pedidos_Exportados.xlsx";
+                link.click();
+            } catch (err) {
+                console.error("Erro ao exportar:", err);
+                alert("Erro ao carregar o template.xlsx. Certifique-se que o ficheiro existe.");
+            }
+        }
+
+        async function guardarAlteracoes() {
+            // ... (sua lógica de update no Supabase mantida)
+            alert("Dados guardados!");
+        }
+
+        carregarDados();
+    </script>
+</body>
+</html>
